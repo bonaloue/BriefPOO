@@ -17,27 +17,23 @@ $id_user = $_SESSION['user_id'];
 $succes  = '';
 $erreur  = '';
 
-// ── Seule action autorisée : changer le statut ───────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'changer_statut') {
     $id_tache_post = (int)($_POST['id']    ?? 0);
     $nouveau_stat  = $_POST['statut']      ?? '';
 
-    // ✅ CORRECTION : table "taches" + colonne "id_tache" au lieu de "tasks" + "id"
     $verif = $db->prepare("SELECT id_tache FROM taches WHERE id_tache = ? AND id_responsable = ?");
     $verif->execute([$id_tache_post, $id_user]);
 
     if ($verif->fetch()) {
         $res = $tache->changerStatut($id_tache_post, $nouveau_stat, $id_user);
 
-        // Notifier les admins si la tâche est terminée
         if ($nouveau_stat === 'termine') {
             $t_info = $tache->getParId($id_tache_post);
-            // ✅ CORRECTION : table "utilisateurs" + colonne "id_user" au lieu de "users" + "id"
             $admins = $db->query("SELECT id_user FROM utilisateurs WHERE role = 'admin'")->fetchAll();
             foreach ($admins as $admin) {
                 $notification->creer(
                     $admin['id_user'],
-                    "✅ " . htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) .
+                    " " . htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) .
                     " a marqué la tâche « {$t_info['titre']} » comme terminée."
                 );
             }
@@ -49,11 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'chang
     }
 }
 
-// ── Filtres ──────────────────────────────────────────────────────────────────
 $filtre_statut   = $_GET['statut']   ?? '';
 $filtre_priorite = $_GET['priorite'] ?? '';
 
-// ✅ CORRECTION : table "taches" + colonne "id_tache" au lieu de "tasks" + "id"
 $sql    = "SELECT * FROM taches WHERE id_responsable = ?";
 $params = [$id_user];
 
@@ -95,13 +89,12 @@ require_once '../includes/sidebar_resp.php';
     <div class="page-content">
 
         <?php if ($succes): ?>
-            <div class="alerte-succes">✅ <?= htmlspecialchars($succes) ?></div>
+            <div class="alerte-succes"> <?= htmlspecialchars($succes) ?></div>
         <?php endif; ?>
         <?php if ($erreur): ?>
-            <div class="alerte-erreur">⚠️ <?= htmlspecialchars($erreur) ?></div>
+            <div class="alerte-erreur"> <?= htmlspecialchars($erreur) ?></div>
         <?php endif; ?>
 
-        <!-- Filtres -->
         <div class="form-card mb-4">
             <form method="GET" class="row g-3 align-items-end">
                 <div class="col-md-4">
@@ -111,7 +104,7 @@ require_once '../includes/sidebar_resp.php';
                         <option value="en_attente" <?= $filtre_statut === 'en_attente' ? 'selected' : '' ?>>En attente</option>
                         <option value="en_cours"   <?= $filtre_statut === 'en_cours'   ? 'selected' : '' ?>>En cours</option>
                         <option value="termine"    <?= $filtre_statut === 'termine'    ? 'selected' : '' ?>>Terminé</option>
-                        <option value="retard"     <?= $filtre_statut === 'retard'     ? 'selected' : '' ?>>⚠️ En retard</option>
+                        <option value="retard"     <?= $filtre_statut === 'retard'     ? 'selected' : '' ?>> En retard</option>
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -130,7 +123,6 @@ require_once '../includes/sidebar_resp.php';
             </form>
         </div>
 
-        <!-- Liste des tâches sous forme de cartes -->
         <?php if (empty($mes_taches)): ?>
             <div class="table-card">
                 <div class="text-center py-5 text-muted">
@@ -158,7 +150,7 @@ require_once '../includes/sidebar_resp.php';
                             <?= ucfirst($t['priorite']) ?>
                         </span>
                         <?php if ($retard): ?>
-                            <span class="badge bg-danger">⚠️ En retard</span>
+                            <span class="badge bg-danger"> En retard</span>
                         <?php elseif ($aujourd): ?>
                             <span class="badge bg-warning text-dark">📅 Aujourd'hui</span>
                         <?php endif; ?>
@@ -187,22 +179,20 @@ require_once '../includes/sidebar_resp.php';
                     </div>
                     <?php endif; ?>
 
-                    <!-- Changement de statut -->
                     <form method="POST">
                         <input type="hidden" name="action" value="changer_statut">
-                        <!-- ✅ CORRECTION : id_tache au lieu de id -->
                         <input type="hidden" name="id" value="<?= $t['id_tache'] ?>">
                         <div class="d-flex gap-2 align-items-center">
                             <select name="statut" class="form-select form-select-sm flex-fill"
                                     style="font-size:13px">
                                 <option value="en_attente" <?= $t['statut'] === 'en_attente' ? 'selected' : '' ?>>
-                                    ⏳ En attente
+                                    En attente
                                 </option>
                                 <option value="en_cours" <?= $t['statut'] === 'en_cours' ? 'selected' : '' ?>>
-                                    🔄 En cours
+                                    En cours
                                 </option>
                                 <option value="termine" <?= $t['statut'] === 'termine' ? 'selected' : '' ?>>
-                                    ✅ Terminé
+                                    Terminé
                                 </option>
                             </select>
                             <button type="submit" class="btn btn-sm btn-navy" title="Mettre à jour">

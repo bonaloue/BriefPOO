@@ -17,15 +17,12 @@ $en_retard    = $tache->getEnRetard();
 $derniers     = array_slice($tache->getTout(), 0, 8);
 $nb_notifs    = $notification->compterNonLues($_SESSION['user_id']);
 
-// ✅ CORRECTION : table "utilisateurs" au lieu de "users"
 $nb_utilisateurs = $db->query("SELECT COUNT(*) FROM utilisateurs")->fetchColumn();
 
 $page_titre    = "Tableau de bord";
 $page_courante = 'dashboard.php';
 
-// ── Données pour les graphiques ──────────────────────────────────────────────
 
-// 1. Répartition par statut
 $chart_statuts = [
     'En attente' => (int)$stats['en_attente'],
     'En cours'   => (int)$stats['en_cours'],
@@ -33,7 +30,6 @@ $chart_statuts = [
     'En retard'  => (int)$stats['en_retard'],
 ];
 
-// 2. Tâches par priorité
 $prios = $db->query("
     SELECT priorite, COUNT(*) AS nb FROM taches GROUP BY priorite
 ")->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -43,7 +39,6 @@ $chart_priorites = [
     'Basse'   => (int)($prios['basse']   ?? 0),
 ];
 
-// 3. Activité sur les 7 derniers jours
 $activite = $db->query("
     SELECT DATE(date_creation) AS jour, COUNT(*) AS nb
     FROM taches
@@ -60,7 +55,6 @@ for ($i = 6; $i >= 0; $i--) {
     $jours_data[]   = (int)($activite[$jour] ?? 0);
 }
 
-// 4. Top 5 responsables par nombre de tâches
 $par_resp = $db->query("
     SELECT CONCAT(u.prenom, ' ', u.nom) AS nom, COUNT(t.id_tache) AS nb
     FROM utilisateurs u
@@ -79,12 +73,10 @@ require_once '../includes/sidebar.php';
 
 <div class="main-content">
 
-    <!-- Topbar avec dropdown profil -->
     <div class="topbar">
         <h1 class="titre-page"><i class="bi bi-speedometer2 me-2"></i>Tableau de bord</h1>
         <div class="topbar-droite">
 
-            <!-- Cloche notifications -->
             <a href="notifications.php" class="notif-badge text-decoration-none">
                 <i class="bi bi-bell fs-5 text-secondary"></i>
                 <?php if ($nb_notifs > 0): ?>
@@ -92,7 +84,6 @@ require_once '../includes/sidebar.php';
                 <?php endif; ?>
             </a>
 
-            <!-- ✅ AJOUT : Dropdown profil admin -->
             <div class="dropdown">
                 <div class="d-flex align-items-center gap-2 profil-topbar-btn"
                      data-bs-toggle="dropdown" aria-expanded="false">
@@ -149,13 +140,11 @@ require_once '../includes/sidebar.php';
 
     <div class="page-content">
 
-        <!-- Message de bienvenue -->
         <p class="text-muted mb-4">
             Bonjour, <strong><?= htmlspecialchars($_SESSION['user_prenom']) ?></strong> 👋 
             - <?= date('l d F Y') ?>
         </p>
 
-        <!-- Cartes statistiques -->
         <div class="row g-3 mb-4">
 
             <div class="col-md-6 col-xl-3">
@@ -208,7 +197,6 @@ require_once '../includes/sidebar.php';
 
         </div>
 
-        <!-- 2ème rangée : retard + utilisateurs + notifs -->
         <div class="row g-3 mb-4">
 
             <div class="col-md-4">
@@ -249,10 +237,8 @@ require_once '../includes/sidebar.php';
 
         </div>
 
-        <!-- ── GRAPHIQUES ─────────────────────────────────────────── -->
         <div class="row g-4 mb-4">
 
-            <!-- Camembert : statuts -->
             <div class="col-lg-4">
                 <div class="table-card h-100">
                     <div class="table-header">
@@ -265,7 +251,6 @@ require_once '../includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Barres : priorités -->
             <div class="col-lg-4">
                 <div class="table-card h-100">
                     <div class="table-header">
@@ -278,7 +263,6 @@ require_once '../includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Barres horizontales : top responsables -->
             <div class="col-lg-4">
                 <div class="table-card h-100">
                     <div class="table-header">
@@ -293,7 +277,6 @@ require_once '../includes/sidebar.php';
 
         </div>
 
-        <!-- Courbe activité 7 jours -->
         <div class="table-card mb-4">
             <div class="table-header">
                 <h5><i class="bi bi-graph-up me-2"></i>Activité des 7 derniers jours</h5>
@@ -306,7 +289,6 @@ require_once '../includes/sidebar.php';
 
         <div class="row g-4">
 
-            <!-- Tâches récentes -->
             <div class="col-xl-8">
                 <div class="table-card">
                     <div class="table-header">
@@ -382,7 +364,6 @@ require_once '../includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Tâches en retard -->
             <div class="col-xl-4">
                 <div class="table-card h-100">
                     <div class="table-header">
@@ -418,8 +399,8 @@ require_once '../includes/sidebar.php';
             </div>
 
         </div>
-    </div><!-- /page-content -->
-</div><!-- /main-content -->
+    </div>
+</div>
 
 <style>
     .profil-topbar-btn {
@@ -458,7 +439,6 @@ require_once '../includes/sidebar.php';
 Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
 Chart.defaults.font.size   = 12;
 
-// ── 1. Camembert : statuts ───────────────────────────────────────────────────
 new Chart(document.getElementById('chartStatuts'), {
     type: 'doughnut',
     data: {
@@ -478,7 +458,6 @@ new Chart(document.getElementById('chartStatuts'), {
     }
 });
 
-// ── 2. Barres verticales : priorités ────────────────────────────────────────
 new Chart(document.getElementById('chartPriorites'), {
     type: 'bar',
     data: {
@@ -503,7 +482,6 @@ new Chart(document.getElementById('chartPriorites'), {
     }
 });
 
-// ── 3. Barres horizontales : top responsables ────────────────────────────────
 new Chart(document.getElementById('chartResponsables'), {
     type: 'bar',
     data: {
@@ -528,7 +506,6 @@ new Chart(document.getElementById('chartResponsables'), {
     }
 });
 
-// ── 4. Courbe : activité 7 jours ─────────────────────────────────────────────
 new Chart(document.getElementById('chartActivite'), {
     type: 'line',
     data: {

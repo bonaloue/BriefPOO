@@ -35,7 +35,6 @@ require_once '../includes/sidebar.php';
 
     <div class="page-content">
 
-        <!-- Hero section -->
         <div style="background: linear-gradient(135deg, #1A3A5C, #2d6a9f);
                     border-radius: 16px; padding: 50px 40px; color: #fff;
                     margin-bottom: 30px; position: relative; overflow: hidden;">
@@ -76,7 +75,6 @@ require_once '../includes/sidebar.php';
 
         <div class="row g-4">
 
-            <!-- Objectifs -->
             <div class="col-lg-6">
                 <div class="table-card h-100">
                     <div class="table-header">
@@ -112,7 +110,6 @@ require_once '../includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Modules disponibles -->
             <div class="col-lg-6">
                 <div class="table-card h-100">
                     <div class="table-header">
@@ -150,7 +147,6 @@ require_once '../includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Technologies -->
             <div class="col-lg-6">
                 <div class="table-card">
                     <div class="table-header">
@@ -184,7 +180,6 @@ require_once '../includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Informations projet -->
             <div class="col-lg-6">
                 <div class="table-card">
                     <div class="table-header">

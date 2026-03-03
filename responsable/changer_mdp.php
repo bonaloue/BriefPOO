@@ -4,16 +4,13 @@ session_start();
 require_once '../config/database.php';
 require_once '../classes/Utilisateur.php';
 
-// Doit être connecté
 Utilisateur::exigerConnexion();
 
-// ✅ Un admin ne doit jamais atterrir ici
 if (Utilisateur::estAdmin()) {
     header('Location: ../admin/dashboard.php');
     exit;
 }
 
-// ✅ Si doit_changer_mdp est déjà à false → pas besoin d'être ici
 if (empty($_SESSION['doit_changer_mdp'])) {
     header('Location: ../responsable/dashboard.php');
     exit;
@@ -28,7 +25,6 @@ $utilisateur = new Utilisateur($db);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // ── Choix 1 : Changer le mot de passe ───────────────────────────────────
     if ($action === 'changer') {
         $resultat = $utilisateur->modifierMotDePasse(
             $_SESSION['user_id'],
@@ -39,25 +35,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($resultat['succes']) {
             $succes = $resultat['message'];
-            // doit_changer_mdp = 0 en BDD + session (géré dans modifierMotDePasse)
             header('refresh:2;url=../responsable/dashboard.php');
         } else {
             $erreur = $resultat['message'];
         }
     }
 
-    // ── Choix 2 : Reporter à plus tard (session uniquement) ──────────────────
     if ($action === 'plus_tard') {
-        // On désactive le blocage pour cette session uniquement
-        // La BDD garde doit_changer_mdp = 1 → il sera re-invité à la prochaine connexion
         $_SESSION['doit_changer_mdp'] = false;
         header('Location: ../responsable/dashboard.php');
         exit;
     }
 
-    // ── Choix 3 : Ne plus jamais demander (session + BDD) ───────────────────
     if ($action === 'ne_plus_demander') {
-        // On met doit_changer_mdp = 0 en BDD → plus jamais invité
         $db->prepare(
             "UPDATE utilisateurs SET doit_changer_mdp = 0 WHERE id_user = ?"
         )->execute([$_SESSION['user_id']]);
@@ -109,7 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         margin-bottom: 22px;
     }
 
-    /* Bandeau avertissement */
     .alerte-bandeau {
         background: #fff3cd;
         border: 1px solid #ffc107;
@@ -122,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     .alerte-bandeau strong { display: block; margin-bottom: 4px; font-size: 14px; }
 
-    /* Info mdp par défaut */
     .info-mdp-defaut {
         background: #e8f4fd;
         border: 1px solid #bee5f5;
@@ -141,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         letter-spacing: 1px;
     }
 
-    /* Alertes */
     .erreur {
         background: #fde8e8; border: 1px solid #f5c6c6; color: #c0392b;
         padding: 10px 14px; border-radius: 8px; margin-bottom: 18px;
@@ -153,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-size: 14px; text-align: center;
     }
 
-    /* Formulaire */
     label {
         display: block; margin-bottom: 5px;
         font-weight: 600; color: #555; font-size: 13px;
@@ -168,7 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         box-shadow: 0 0 8px rgba(110,142,251,0.3);
     }
 
-    /* Bouton principal */
     .btn-changer {
         width: 100%; padding: 12px;
         border: none; border-radius: 8px;
@@ -177,7 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     .btn-changer:hover { background: #14304f; }
 
-    /* Séparateur */
     .separateur {
         display: flex; align-items: center; gap: 12px;
         margin: 20px 0 16px;
@@ -188,7 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         height: 1px; background: #e0e0e0;
     }
 
-    /* Bloc des choix alternatifs */
     .choix-alternatifs {
         display: flex; flex-direction: column; gap: 10px;
     }
@@ -227,19 +210,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         align-self: center;
     }
 
-    /* Bouton "Plus tard" */
     .btn-plus-tard {
         background: #e8eef5; color: #1A3A5C;
     }
     .btn-plus-tard:hover { background: #d0dcec; }
 
-    /* Bouton "Ne plus demander" */
     .btn-ne-plus {
         background: #fde8e8; color: #c0392b;
     }
     .btn-ne-plus:hover { background: #fbd0d0; }
 
-    /* Accordéon pour afficher/masquer le formulaire */
     #formulaireMdp { display: none; }
     #formulaireMdp.visible { display: block; }
 
@@ -263,14 +243,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Bonjour, <strong><?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?></strong>
     </p>
 
-    <!-- Bandeau d'avertissement -->
     <div class="alerte-bandeau">
-        <strong>⚠️ Mot de passe par défaut détecté</strong>
+        <strong> Mot de passe par défaut détecté</strong>
         Votre compte utilise encore le mot de passe par défaut.
         Nous vous recommandons de le changer pour sécuriser votre accès.
     </div>
 
-    <!-- Rappel du mot de passe par défaut -->
     <div class="info-mdp-defaut">
         Votre mot de passe actuel (par défaut) est : <code>passer123</code>
     </div>
@@ -281,17 +259,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if ($succes): ?>
         <div class="succes">
-            ✅ <?= htmlspecialchars($succes) ?><br>
+             <?= htmlspecialchars($succes) ?><br>
             <small>Redirection vers le tableau de bord dans 2 secondes...</small>
         </div>
     <?php else: ?>
 
-    <!-- ── Bouton pour afficher le formulaire de changement ── -->
     <button class="btn-toggle-form" onclick="toggleFormulaire()" id="btnToggle">
         <span>🔑</span> Changer mon mot de passe maintenant
     </button>
 
-    <!-- ── Formulaire de changement (masqué par défaut) ── -->
     <div id="formulaireMdp" class="<?= $erreur ? 'visible' : '' ?>">
         <br>
         <form method="POST">
@@ -313,18 +289,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    placeholder="Répétez votre nouveau mot de passe" required>
 
             <button type="submit" class="btn-changer">
-                ✅ Valider le changement
+                 Valider le changement
             </button>
         </form>
     </div>
 
-    <!-- ── Séparateur ── -->
     <div class="separateur">ou choisissez une autre option</div>
 
-    <!-- ── Les deux choix alternatifs ── -->
     <div class="choix-alternatifs">
 
-        <!-- Option 2 : Plus tard (session uniquement) -->
         <div class="choix-card">
             <div class="choix-icone">⏰</div>
             <div class="choix-texte">
@@ -342,7 +315,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
 
-        <!-- Option 3 : Ne plus jamais demander -->
         <div class="choix-card">
             <div class="choix-icone">🚫</div>
             <div class="choix-texte">
@@ -380,7 +352,6 @@ function toggleFormulaire() {
 }
 
 <?php if ($erreur): ?>
-// Rouvrir automatiquement le formulaire si erreur
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('formulaireMdp').classList.add('visible');
     document.getElementById('btnToggle').innerHTML = '<span>✖</span> Annuler';

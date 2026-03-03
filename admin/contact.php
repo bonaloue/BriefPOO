@@ -65,7 +65,6 @@ require_once '../includes/sidebar.php';
 
         <div class="row g-4">
 
-            <!-- Formulaire de contact -->
             <div class="col-lg-7">
                 <div class="form-card">
                     <h5 class="fw-bold mb-1" style="color:#1A3A5C">
@@ -104,10 +103,8 @@ require_once '../includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Informations de contact -->
             <div class="col-lg-5">
 
-                <!-- Infos rapides -->
                 <div class="table-card mb-4">
                     <div class="table-header">
                         <h5><i class="bi bi-telephone me-2"></i>Informations de contact</h5>
@@ -139,7 +136,6 @@ require_once '../includes/sidebar.php';
                     </div>
                 </div>
 
-                <!-- FAQ rapide -->
                 <div class="table-card">
                     <div class="table-header">
                         <h5><i class="bi bi-question-circle me-2"></i>FAQ</h5>

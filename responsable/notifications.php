@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'marquer_lue') {
-        // ✅ CORRECTION : colonne "id_notif" et "id_responsable" au lieu de "id" et "id_utilisateur"
         $verif = $db->prepare(
             "SELECT id_notif FROM notifications WHERE id_notif = ? AND id_responsable = ?"
         );
@@ -65,7 +64,7 @@ require_once '../includes/sidebar_resp.php';
     <div class="page-content">
 
         <?php if ($succes): ?>
-            <div class="alerte-succes">✅ <?= htmlspecialchars($succes) ?></div>
+            <div class="alerte-succes"> <?= htmlspecialchars($succes) ?></div>
         <?php endif; ?>
 
         <?php if (empty($mes_notifs)): ?>
@@ -106,7 +105,7 @@ require_once '../includes/sidebar_resp.php';
                     <?php if (!$n['lu']): ?>
                     <form method="POST" style="flex-shrink:0">
                         <input type="hidden" name="action" value="marquer_lue">
-                        <!-- ✅ CORRECTION : id_notif au lieu de id -->
+                        <!--  CORRECTION : id_notif au lieu de id -->
                         <input type="hidden" name="id" value="<?= $n['id_notif'] ?>">
                         <button type="submit" class="btn btn-sm btn-outline-success" title="Marquer comme lue">
                             <i class="bi bi-check2"></i> Lu

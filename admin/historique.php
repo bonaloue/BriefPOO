@@ -13,8 +13,6 @@ $tache = new Tache($db);
 $date_debut = $_GET['date_debut'] ?? '';
 $date_fin   = $_GET['date_fin']   ?? '';
 
-// ✅ CORRECTION : tables "historique", "taches", "utilisateurs"
-//                colonnes "id_tache", "id_user", "description_action"
 $sql = "SELECT h.*, 
                t.titre AS tache_titre,
                u.nom AS user_nom, u.prenom AS user_prenom, u.role AS user_role
@@ -32,7 +30,6 @@ $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $historique = $stmt->fetchAll();
 
-// Export CSV
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="historique_' . date('Y-m-d') . '.csv"');
@@ -40,12 +37,12 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fputcsv($out, ['ID', 'Tâche', 'Utilisateur', 'Rôle', 'Action', 'Date']);
     foreach ($historique as $h) {
         fputcsv($out, [
-            // ✅ CORRECTION : id_historique au lieu de id
+            //  CORRECTION : id_historique au lieu de id
             $h['id_historique'],
             $h['tache_titre'] ?? 'Tâche supprimée',
             $h['user_prenom'] . ' ' . $h['user_nom'],
             $h['user_role'] ?? '—',
-            // ✅ CORRECTION : description_action au lieu de action
+            //  CORRECTION : description_action au lieu de action
             $h['description_action'],
             date('d/m/Y H:i', strtotime($h['date_action']))
         ]);
@@ -72,7 +69,6 @@ require_once '../includes/sidebar.php';
 
     <div class="page-content">
 
-        <!-- Filtres par date -->
         <div class="form-card mb-4">
             <form method="GET" class="row g-3 align-items-end">
                 <div class="col-md-4">
@@ -90,7 +86,6 @@ require_once '../includes/sidebar.php';
             </form>
         </div>
 
-        <!-- Tableau de l'historique -->
         <div class="table-card">
             <div class="table-header">
                 <h5><i class="bi bi-journal-text me-2"></i><?= count($historique) ?> entrée(s)</h5>
@@ -109,7 +104,6 @@ require_once '../includes/sidebar.php';
                     <tbody>
                         <?php foreach ($historique as $h): ?>
                         <tr>
-                            <!-- ✅ CORRECTION : id_historique au lieu de id -->
                             <td class="text-muted"><?= $h['id_historique'] ?></td>
                             <td>
                                 <?php if ($h['user_nom']): ?>
@@ -139,7 +133,6 @@ require_once '../includes/sidebar.php';
                                     <span class="text-muted fst-italic">Tâche supprimée</span>
                                 <?php endif; ?>
                             </td>
-                            <!-- ✅ CORRECTION : description_action au lieu de action -->
                             <td style="font-size:13px"><?= htmlspecialchars($h['description_action']) ?></td>
                             <td class="text-muted" style="font-size:13px; white-space:nowrap">
                                 <?= date('d/m/Y à H:i', strtotime($h['date_action'])) ?>

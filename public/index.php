@@ -4,7 +4,6 @@ session_start();
 require_once '../config/database.php';
 require_once '../classes/Utilisateur.php';
 
-// ── Si déjà connecté → rediriger selon le rôle ──────────────────────────────
 if (Utilisateur::estConnecte()) {
     if (Utilisateur::estAdmin()) {
         header('Location: ../admin/dashboard.php');
@@ -16,7 +15,6 @@ if (Utilisateur::estConnecte()) {
 
 $erreur = '';
 
-// ── Traitement du formulaire de connexion ────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $db          = (new Database())->connect();
@@ -29,13 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($resultat['succes']) {
 
-        // Responsable avec mot de passe par défaut → forcer le changement
         if (!empty($_SESSION['doit_changer_mdp'])) {
             header('Location: ../responsable/changer_mdp.php');
             exit;
         }
 
-        // Redirection selon le rôle
         if (Utilisateur::estAdmin()) {
             header('Location: ../admin/dashboard.php');
         } else {
@@ -164,7 +160,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <form action="index.php" class="carte" method="POST">
 
-        <!-- Logo -->
         <img src="../image/logo.png" alt="Zandoinou Consulting" class="logo"
              onerror="this.style.display='none'">
 
@@ -172,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="sous-titre">Zandoinou Consulting — Espace de gestion</p>
 
         <?php if ($erreur): ?>
-            <div class="erreur">⚠️ <?= htmlspecialchars($erreur) ?></div>
+            <div class="erreur"> <?= htmlspecialchars($erreur) ?></div>
         <?php endif; ?>
 
         <label for="email">Adresse email</label>

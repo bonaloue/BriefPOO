@@ -8,10 +8,7 @@ class Utilisateur {
         $this->db = $db;
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  UTILITAIRES PRIVÉS
-    // ──────────────────────────────────────────────────────────
-
+    
     private function emailExiste($email) {
         $stmt = $this->db->prepare("SELECT id_user FROM utilisateurs WHERE email = ? LIMIT 1");
         $stmt->execute([$email]);
@@ -30,7 +27,6 @@ class Utilisateur {
         return $stmt->fetch();
     }
 
-    // Vérifie si une colonne existe dans une table (évite les crashs si migration pas faite)
     private function colonneExiste($colonne, $table) {
         try {
             $stmt = $this->db->query("SHOW COLUMNS FROM `$table` LIKE '$colonne'");
@@ -40,9 +36,6 @@ class Utilisateur {
         }
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  RÉCUPÉRER TOUS LES UTILISATEURS
-    // ──────────────────────────────────────────────────────────
 
     public function getTous() {
         $stmt = $this->db->query(
@@ -53,9 +46,6 @@ class Utilisateur {
         return $stmt->fetchAll();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  INSCRIPTION — réservée à l'admin
-    // ──────────────────────────────────────────────────────────
 
     const MDP_PAR_DEFAUT = 'passer123';
 
@@ -79,7 +69,6 @@ class Utilisateur {
 
         $hash = password_hash(self::MDP_PAR_DEFAUT, PASSWORD_BCRYPT);
 
-        // Insertion adaptée : avec ou sans colonne doit_changer_mdp
         if ($this->colonneExiste('doit_changer_mdp', 'utilisateurs')) {
             $this->db->prepare(
                 "INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role, doit_changer_mdp)
@@ -95,9 +84,6 @@ class Utilisateur {
         return ['succes' => true, 'message' => "Compte créé. Mot de passe par défaut : " . self::MDP_PAR_DEFAUT];
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  CONNEXION
-    // ──────────────────────────────────────────────────────────
 
     public function connecter($email, $mot_de_passe) {
 
@@ -119,7 +105,6 @@ class Utilisateur {
         $_SESSION['user_email']  = $utilisateur['email'];
         $_SESSION['user_role']   = $utilisateur['role'];
 
-        // Un admin ne doit JAMAIS être bloqué par doit_changer_mdp
         if ($utilisateur['role'] === 'admin') {
             $_SESSION['doit_changer_mdp'] = false;
         } else {
@@ -131,18 +116,12 @@ class Utilisateur {
         return ['succes' => true, 'message' => 'Connexion réussie.'];
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  DÉCONNEXION
-    // ──────────────────────────────────────────────────────────
 
     public function deconnecter() {
         session_unset();
         session_destroy();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  MODIFICATION DU PROFIL
-    // ──────────────────────────────────────────────────────────
 
     public function modifierProfil($id, $nom, $prenom) {
 
@@ -160,9 +139,6 @@ class Utilisateur {
         return ['succes' => true, 'message' => 'Profil mis à jour avec succès.'];
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  MODIFICATION DU MOT DE PASSE
-    // ──────────────────────────────────────────────────────────
 
     public function modifierMotDePasse($id, $ancien, $nouveau, $confirmation) {
 
@@ -190,7 +166,6 @@ class Utilisateur {
 
         $hash = password_hash($nouveau, PASSWORD_BCRYPT);
 
-        // Mise à jour adaptée : avec ou sans colonne doit_changer_mdp
         if ($this->colonneExiste('doit_changer_mdp', 'utilisateurs')) {
             $this->db->prepare(
                 "UPDATE utilisateurs SET mot_de_passe = ?, doit_changer_mdp = 0 WHERE id_user = ?"
@@ -206,9 +181,6 @@ class Utilisateur {
         return ['succes' => true, 'message' => 'Mot de passe modifié avec succès.'];
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  MÉTHODES STATIQUES — vérification de session
-    // ──────────────────────────────────────────────────────────
 
     public static function estConnecte() {
         return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
@@ -232,7 +204,6 @@ class Utilisateur {
         }
     }
 
-    // Bloquer toutes les pages responsable si mdp par défaut pas encore changé
     public static function exigerChangementMdp() {
         if (!empty($_SESSION['doit_changer_mdp'])) {
             header('Location: ../responsable/changer_mdp.php');

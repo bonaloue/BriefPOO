@@ -65,10 +65,8 @@ require_once '../includes/sidebar_resp.php';
     <div class="page-content">
         <div class="row g-4">
 
-            <!-- Carte profil + modification infos -->
             <div class="col-lg-5">
 
-                <!-- Carte identité -->
                 <div class="table-card mb-4" style="text-align:center; padding:30px 20px">
                     <div style="width:80px;height:80px;background:#1A3A5C;border-radius:50%;
                                 display:flex;align-items:center;justify-content:center;
@@ -90,17 +88,16 @@ require_once '../includes/sidebar_resp.php';
                     </div>
                 </div>
 
-                <!-- Modifier les informations -->
                 <div class="form-card">
                     <h6 class="fw-bold mb-3" style="color:#1A3A5C">
                         <i class="bi bi-pencil me-2"></i>Modifier mes informations
                     </h6>
 
                     <?php if ($succes_profil): ?>
-                        <div class="alerte-succes mb-3">✅ <?= htmlspecialchars($succes_profil) ?></div>
+                        <div class="alerte-succes mb-3"> <?= htmlspecialchars($succes_profil) ?></div>
                     <?php endif; ?>
                     <?php if ($erreur_profil): ?>
-                        <div class="alerte-erreur mb-3">⚠️ <?= htmlspecialchars($erreur_profil) ?></div>
+                        <div class="alerte-erreur mb-3"> <?= htmlspecialchars($erreur_profil) ?></div>
                     <?php endif; ?>
 
                     <form method="POST">
@@ -128,7 +125,6 @@ require_once '../includes/sidebar_resp.php';
                 </div>
             </div>
 
-            <!-- Modifier le mot de passe + statistiques -->
             <div class="col-lg-7">
                 <div class="form-card">
                     <h6 class="fw-bold mb-3" style="color:#1A3A5C">
@@ -136,10 +132,10 @@ require_once '../includes/sidebar_resp.php';
                     </h6>
 
                     <?php if ($succes_mdp): ?>
-                        <div class="alerte-succes mb-3">✅ <?= htmlspecialchars($succes_mdp) ?></div>
+                        <div class="alerte-succes mb-3"> <?= htmlspecialchars($succes_mdp) ?></div>
                     <?php endif; ?>
                     <?php if ($erreur_mdp): ?>
-                        <div class="alerte-erreur mb-3">⚠️ <?= htmlspecialchars($erreur_mdp) ?></div>
+                        <div class="alerte-erreur mb-3"> <?= htmlspecialchars($erreur_mdp) ?></div>
                     <?php endif; ?>
 
                     <form method="POST">
@@ -174,9 +170,7 @@ require_once '../includes/sidebar_resp.php';
                     </form>
                 </div>
 
-                <!-- Récap rapide des tâches -->
                 <?php
-                // ✅ CORRECTION : table "taches" + colonne "id_tache" au lieu de "tasks" + "id"
                 $recap = $db->prepare(
                     "SELECT 
                         COUNT(*) AS total,

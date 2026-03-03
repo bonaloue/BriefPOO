@@ -1,29 +1,24 @@
 <?php
-// includes/sidebar_resp.php - Navigation HORIZONTALE (navbar Bootstrap)
 $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-resp sticky-top">
     <div class="container-fluid px-4">
 
-        <!-- Logo -->
         <a class="navbar-brand d-flex align-items-center gap-2" href="dashboard.php">
             <span class="brand-nom">ZANDOINOU</span>
             <span class="badge-resp">Responsable</span>
         </a>
 
-        <!-- Toggler mobile -->
         <button class="navbar-toggler" type="button"
                 data-bs-toggle="collapse" data-bs-target="#navResponsable"
                 aria-controls="navResponsable" aria-expanded="false">
             <i class="bi bi-list text-white fs-4"></i>
         </button>
 
-        <!-- Liens de navigation -->
         <div class="collapse navbar-collapse" id="navResponsable">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                <!-- Mon espace -->
                 <li class="nav-item">
                     <a class="nav-link-resp <?= $page_courante === 'dashboard.php' ? 'actif' : '' ?>"
                        href="dashboard.php">
@@ -49,7 +44,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
                     </a>
                 </li>
 
-                <!-- Informations -->
                 <li class="nav-item">
                     <a class="nav-link-resp <?= $page_courante === 'apropos.php' ? 'actif' : '' ?>"
                        href="apropos.php">
@@ -67,10 +61,8 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
 
             </ul>
 
-            <!-- Partie droite : profil + déconnexion -->
             <ul class="navbar-nav ms-auto align-items-center">
 
-                <!-- Dropdown profil -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-2"
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -91,7 +83,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
 
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 dropdown-profil">
 
-                        <!-- En-tête profil -->
                         <li>
                             <div class="dropdown-entete">
                                 <div class="dropdown-avatar">
@@ -116,7 +107,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
 
                         <li><hr class="dropdown-divider my-1"></li>
 
-                        <!-- Mon profil -->
                         <li>
                             <a class="dropdown-item dropdown-lien <?= $page_courante === 'profil.php' ? 'actif-dd' : '' ?>"
                                href="profil.php">
@@ -124,7 +114,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
                             </a>
                         </li>
 
-                        <!-- Changer mot de passe (ancre directe) -->
                         <li>
                             <a class="dropdown-item dropdown-lien" href="profil.php#mdp">
                                 <i class="bi bi-shield-lock"></i> Changer mon mot de passe
@@ -133,7 +122,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
 
                         <li><hr class="dropdown-divider my-1"></li>
 
-                        <!-- Déconnexion -->
                         <li>
                             <a class="dropdown-item dropdown-lien text-danger" href="../pages/logout.php">
                                 <i class="bi bi-box-arrow-left"></i> Déconnexion
@@ -149,9 +137,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
 </nav>
 
 <style>
-    /* ══════════════════════════════════════
-       NAVBAR RESPONSABLE - MENU HORIZONTAL
-    ══════════════════════════════════════ */
 
     .navbar-resp {
         background: var(--navy);
@@ -161,7 +146,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
         min-height: 58px;
     }
 
-    /* Logo */
     .navbar-resp .brand-nom {
         font-weight: 800;
         font-size: 15px;
@@ -177,7 +161,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
         font-weight: 600;
     }
 
-    /* Liens nav */
     .nav-link-resp {
         display: flex;
         align-items: center;
@@ -203,7 +186,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
     }
     .nav-link-resp i { font-size: 15px; }
 
-    /* Badge notification dans le nav */
     .badge-notif-nav {
         font-size: 9px;
         padding: 2px 5px;
@@ -212,7 +194,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
         right: 6px;
     }
 
-    /* Avatar dans la navbar */
     .avatar-navbar {
         width: 34px;
         height: 34px;
@@ -238,7 +219,6 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
         color: rgba(255,255,255,0.45);
     }
 
-    /* Dropdown profil */
     .navbar-resp .dropdown-toggle::after {
         display: none; /* on utilise notre propre chevron */
     }
@@ -288,20 +268,17 @@ $nb = isset($nb_notifs) ? (int)$nb_notifs : 0;
     .dropdown-lien i { font-size: 15px; width: 18px; color: #888; }
     .dropdown-lien.text-danger i { color: #E63946; }
 
-    /* Toggler mobile */
     .navbar-resp .navbar-toggler {
         border: 1px solid rgba(255,255,255,0.2);
         padding: 4px 10px;
     }
     .navbar-resp .navbar-toggler:focus { box-shadow: none; }
 
-    /* Suppression de la marge gauche héritée du sidebar */
     .main-content {
         margin-left: 0 !important;
         min-height: calc(100vh - 61px);
     }
 
-    /* Mobile : menu vertical replié */
     @media (max-width: 991px) {
         .navbar-resp { padding: 4px 0; }
         .nav-link-resp {

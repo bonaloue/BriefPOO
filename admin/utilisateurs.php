@@ -14,11 +14,9 @@ $tache       = new Tache($db);
 $succes = '';
 $erreur = '';
 
-// ── Traitement des actions POST ──────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // Créer un utilisateur
     if ($action === 'creer') {
         $res = $utilisateur->inscrire(
             trim($_POST['nom']    ?? ''),
@@ -29,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $res['succes'] ? $succes = $res['message'] : $erreur = $res['message'];
     }
 
-    // Modifier un utilisateur
     if ($action === 'modifier') {
         $res = $utilisateur->modifierProfil(
             (int)($_POST['id']    ?? 0),
@@ -37,10 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             trim($_POST['prenom'] ?? '')
         );
 
-        // Modifier le rôle séparément
         if ($res['succes'] && isset($_POST['role'])) {
             $nouveau_role = in_array($_POST['role'], ['admin', 'responsable']) ? $_POST['role'] : 'responsable';
-            // ✅ CORRECTION : table "utilisateurs" + colonne "id_user"
             $db->prepare("UPDATE utilisateurs SET role = ? WHERE id_user = ?")
                ->execute([$nouveau_role, (int)$_POST['id']]);
         }
@@ -48,32 +43,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $res['succes'] ? $succes = 'Utilisateur modifié avec succès.' : $erreur = $res['message'];
     }
 
-    // Supprimer un utilisateur
     if ($action === 'supprimer') {
         $id_cible = (int)($_POST['id'] ?? 0);
 
         if ($id_cible === (int)$_SESSION['user_id']) {
             $erreur = 'Vous ne pouvez pas supprimer votre propre compte.';
         } else {
-            // ✅ CORRECTION : table "utilisateurs" + colonne "id_user"
             $db->prepare("DELETE FROM utilisateurs WHERE id_user = ?")->execute([$id_cible]);
             $succes = 'Utilisateur supprimé avec succès.';
         }
     }
 
-    // Réinitialiser le mot de passe
     if ($action === 'reinitialiser_mdp') {
         $id_cible = (int)($_POST['id'] ?? 0);
         $hash = password_hash('passer123', PASSWORD_BCRYPT);
-        // ✅ Remet doit_changer_mdp = 1 pour forcer le changement à la prochaine connexion
         $db->prepare("UPDATE utilisateurs SET mot_de_passe = ?, doit_changer_mdp = 1 WHERE id_user = ?")
            ->execute([$hash, $id_cible]);
         $succes = 'Mot de passe réinitialisé à "passer123". L\'utilisateur devra le changer à sa prochaine connexion.';
     }
 }
 
-// ── Récupération des données ─────────────────────────────────────────────────
-// ✅ CORRECTION : tables "utilisateurs" et "taches" + colonnes "id_user" et "id_tache"
 $utilisateurs = $db->query(
     "SELECT u.*, 
             COUNT(t.id_tache) AS nb_taches,
@@ -104,13 +93,12 @@ require_once '../includes/sidebar.php';
     <div class="page-content">
 
         <?php if ($succes): ?>
-            <div class="alerte-succes">✅ <?= htmlspecialchars($succes) ?></div>
+            <div class="alerte-succes"> <?= htmlspecialchars($succes) ?></div>
         <?php endif; ?>
         <?php if ($erreur): ?>
-            <div class="alerte-erreur">⚠️ <?= htmlspecialchars($erreur) ?></div>
+            <div class="alerte-erreur"> <?= htmlspecialchars($erreur) ?></div>
         <?php endif; ?>
 
-        <!-- Tableau des utilisateurs -->
         <div class="table-card">
             <div class="table-header">
                 <h5><i class="bi bi-people me-2"></i><?= count($utilisateurs) ?> utilisateur(s)</h5>
@@ -143,7 +131,7 @@ require_once '../includes/sidebar.php';
                                         <?php if (!empty($u['doit_changer_mdp'])): ?>
                                             <small class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>Doit changer son mot de passe</small>
                                         <?php endif; ?>
-                                        <!-- ✅ CORRECTION : id_user au lieu de id -->
+                                        <!--  CORRECTION : id_user au lieu de id -->
                                         <?php if ($u['id_user'] == $_SESSION['user_id']): ?>
                                             <small class="text-muted">(vous)</small>
                                         <?php endif; ?>
@@ -169,7 +157,6 @@ require_once '../includes/sidebar.php';
                             <td class="text-muted"><?= date('d/m/Y', strtotime($u['date_creation'])) ?></td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <!-- Bouton Modifier -->
                                     <button class="btn btn-sm btn-outline-secondary" title="Modifier"
                                         data-bs-toggle="modal" data-bs-target="#modalModifier"
                                         data-id="<?= $u['id_user'] ?>"
@@ -178,23 +165,17 @@ require_once '../includes/sidebar.php';
                                         data-role="<?= $u['role'] ?>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <!-- Bouton Réinitialiser mdp -->
                                     <form method="POST" style="display:inline"
                                           onsubmit="return confirm('Réinitialiser le mot de passe de cet utilisateur à « passer123 » ?')">
                                         <input type="hidden" name="action" value="reinitialiser_mdp">
-                                        <!-- ✅ CORRECTION : id_user au lieu de id -->
                                         <input type="hidden" name="id" value="<?= $u['id_user'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-warning" title="Réinitialiser le mot de passe">
                                             <i class="bi bi-key"></i>
                                         </button>
                                     </form>
-                                    <!-- Bouton Voir tâches -->
-                                    <!-- ✅ CORRECTION : id_user au lieu de id -->
                                     <a href="taches.php?responsable=<?= $u['id_user'] ?>" class="btn btn-sm btn-outline-primary" title="Voir les tâches">
                                         <i class="bi bi-list-task"></i>
                                     </a>
-                                    <!-- Bouton Supprimer -->
-                                    <!-- ✅ CORRECTION : id_user au lieu de id -->
                                     <?php if ($u['id_user'] != $_SESSION['user_id']): ?>
                                     <form method="POST" style="display:inline"
                                           onsubmit="return confirm('Supprimer cet utilisateur ? Ses tâches resteront mais sans responsable assigné.')">
@@ -217,7 +198,6 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<!-- ── Modal Créer ─────────────────────────────────────────────────────────── -->
 <div class="modal fade" id="modalCreer" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -261,7 +241,6 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<!-- ── Modal Modifier ──────────────────────────────────────────────────────── -->
 <div class="modal fade" id="modalModifier" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

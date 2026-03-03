@@ -16,7 +16,6 @@ $nb_notifs    = $notification->compterNonLues($id_user);
 $succes = '';
 $erreur = '';
 
-// Traitement du formulaire : envoie une notification à tous les admins
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sujet   = trim($_POST['sujet']   ?? '');
     $message = trim($_POST['message'] ?? '');
@@ -25,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($sujet) || empty($message) || empty($type)) {
         $erreur = 'Veuillez remplir tous les champs obligatoires.';
     } else {
-        // ✅ Envoyer la demande à tous les admins via le système de notifications
         $admins = $db->query("SELECT id_user FROM utilisateurs WHERE role = 'admin'")->fetchAll();
         foreach ($admins as $admin) {
             $notification->creer(
@@ -65,15 +63,14 @@ require_once '../includes/sidebar_resp.php';
     <div class="page-content">
 
         <?php if ($succes): ?>
-            <div class="alerte-succes">✅ <?= htmlspecialchars($succes) ?></div>
+            <div class="alerte-succes"> <?= htmlspecialchars($succes) ?></div>
         <?php endif; ?>
         <?php if ($erreur): ?>
-            <div class="alerte-erreur">⚠️ <?= htmlspecialchars($erreur) ?></div>
+            <div class="alerte-erreur"> <?= htmlspecialchars($erreur) ?></div>
         <?php endif; ?>
 
         <div class="row g-4">
 
-            <!-- Formulaire de contact -->
             <div class="col-lg-7">
                 <div class="form-card">
                     <h5 class="fw-bold mb-1" style="color:#1A3A5C">
@@ -88,12 +85,12 @@ require_once '../includes/sidebar_resp.php';
                         <div class="mb-3">
                             <label class="form-label">Type de demande <span class="text-danger">*</span></label>
                             <select name="type" class="form-select" required>
-                                <option value="">— Sélectionner -</option>
-                                <option value="Bug">🐛 Signalement de bug</option>
-                                <option value="Question">❓ Question</option>
-                                <option value="Amélioration">💡 Suggestion</option>
-                                <option value="Accès">🔑 Problème d'accès</option>
-                                <option value="Autre">📌 Autre</option>
+                                <option value="">Sélectionner</option>
+                                <option value="Bug">Signalement de bug</option>
+                                <option value="Question">Question</option>
+                                <option value="Amélioration">Suggestion</option>
+                                <option value="Accès">Problème d'accès</option>
+                                <option value="Autre">Autre</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -108,7 +105,6 @@ require_once '../includes/sidebar_resp.php';
                                       placeholder="Décrivez votre problème ou votre question en détail..." required><?= htmlspecialchars($_POST['message'] ?? '') ?></textarea>
                         </div>
 
-                        <!-- Infos de l'expéditeur (pré-remplies automatiquement) -->
                         <div class="alert alert-info py-2 mb-3" style="font-size:13px">
                             <i class="bi bi-person-check me-1"></i>
                             Ce message sera envoyé en tant que
@@ -123,10 +119,8 @@ require_once '../includes/sidebar_resp.php';
                 </div>
             </div>
 
-            <!-- Infos et FAQ -->
             <div class="col-lg-5">
 
-                <!-- Infos rapides -->
                 <div class="table-card mb-4">
                     <div class="table-header">
                         <h5><i class="bi bi-telephone me-2"></i>Informations de contact</h5>
@@ -156,7 +150,6 @@ require_once '../includes/sidebar_resp.php';
                     </div>
                 </div>
 
-                <!-- FAQ responsable -->
                 <div class="table-card">
                     <div class="table-header">
                         <h5><i class="bi bi-question-circle me-2"></i>Questions fréquentes</h5>

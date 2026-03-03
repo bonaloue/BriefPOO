@@ -15,11 +15,9 @@ $notification = new Notification($db);
 $succes = '';
 $erreur = '';
 
-// ── Traitement POST ──────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // Créer une règle
     if ($action === 'creer') {
         $nom       = trim($_POST['nom_regle']     ?? '');
         $condition = trim($_POST['condition_sql'] ?? '');
@@ -28,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($nom) || empty($condition) || empty($act)) {
             $erreur = 'Tous les champs sont obligatoires.';
         } else {
-            // ✅ CORRECTION : table "automatisation" + colonnes "condition_auto" et "action_auto"
             $db->prepare(
                 "INSERT INTO automatisation (nom_regle, condition_auto, action_auto, actif) VALUES (?, ?, ?, 1)"
             )->execute([$nom, $condition, $act]);
@@ -36,9 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Modifier une règle
     if ($action === 'modifier') {
-        // ✅ CORRECTION : table "automatisation" + colonnes correctes + id_auto
         $db->prepare(
             "UPDATE automatisation SET nom_regle = ?, condition_auto = ?, action_auto = ? WHERE id_auto = ?"
         )->execute([
@@ -50,31 +45,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $succes = 'Règle modifiée avec succès.';
     }
 
-    // Activer / désactiver
     if ($action === 'toggle') {
         $id   = (int)($_POST['id']   ?? 0);
         $etat = (int)($_POST['actif'] ?? 0);
-        // ✅ CORRECTION : table "automatisation" + colonne "id_auto"
         $db->prepare("UPDATE automatisation SET actif = ? WHERE id_auto = ?")->execute([$etat ? 0 : 1, $id]);
         $succes = $etat ? 'Règle désactivée.' : 'Règle activée.';
     }
 
-    // Supprimer une règle
     if ($action === 'supprimer') {
-        // ✅ CORRECTION : table "automatisation" + colonne "id_auto"
         $db->prepare("DELETE FROM automatisation WHERE id_auto = ?")->execute([(int)($_POST['id'] ?? 0)]);
         $succes = 'Règle supprimée.';
     }
 
-    // Exécuter manuellement l'automatisation
     if ($action === 'executer') {
         $nb_notifs = 0;
 
-        // ✅ CORRECTION : table "automatisation"
         $regles = $db->query("SELECT * FROM automatisation WHERE actif = 1")->fetchAll();
 
         foreach ($regles as $regle) {
-            // ✅ CORRECTION : tables "taches" et "utilisateurs" + colonnes correctes
             $sql_taches = "SELECT t.*, u.nom, u.prenom 
                            FROM taches t
                            LEFT JOIN utilisateurs u ON t.id_responsable = u.id_user
@@ -88,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($taches_cibles as $t) {
                 if (!$t['id_responsable']) continue;
 
-                // ✅ CORRECTION : colonne "id_responsable" au lieu de "id_utilisateur"
                 $deja_notifie = $db->prepare(
                     "SELECT COUNT(*) FROM notifications 
                      WHERE id_responsable = ? 
@@ -98,15 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $deja_notifie->execute([$t['id_responsable'], '%' . $t['titre'] . '%']);
 
                 if ($deja_notifie->fetchColumn() == 0) {
-                    // ✅ CORRECTION : colonne "action_auto" au lieu de "action"
                     $message = match($regle['action_auto']) {
-                        'creer_notification'    => "⚠️ Rappel automatique : la tâche « {$t['titre']} » est en retard ou proche de son échéance.",
+                        'creer_notification'    => " Rappel automatique : la tâche « {$t['titre']} » est en retard ou proche de son échéance.",
                         'changer_statut_retard' => "🔴 La tâche « {$t['titre']} » a été automatiquement signalée en retard.",
                         default                 => "📌 Action automatique [{$regle['action_auto']}] pour la tâche « {$t['titre']} »."
                     };
 
                     $notification->creer($t['id_responsable'], $message);
-                    // ✅ CORRECTION : colonne "id_tache" au lieu de "id"
                     $tache->ajouterHistorique($t['id_tache'], $_SESSION['user_id'], "Automatisation déclenchée : {$regle['nom_regle']}");
                     $nb_notifs++;
                 }
@@ -117,13 +102,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ── Récupération des règles ──────────────────────────────────────────────────
-// ✅ CORRECTION : table "automatisation"
 $regles = $db->query(
     "SELECT * FROM automatisation ORDER BY date_creation DESC"
 )->fetchAll();
 
-// Libellés lisibles pour les actions
 $libelles_action = [
     "creer_notification"    => "Envoyer une notification de retard au responsable assigné",
     "changer_statut_retard" => "Marquer automatiquement comme terminé après 30 jours de retard",
@@ -155,14 +137,13 @@ require_once '../includes/sidebar.php';
     <div class="page-content">
 
         <?php if ($succes): ?>
-            <div class="alerte-succes">✅ <?= htmlspecialchars($succes) ?></div>
+            <div class="alerte-succes"> <?= htmlspecialchars($succes) ?></div>
         <?php endif; ?>
         <?php if ($erreur): ?>
-            <div class="alerte-erreur">⚠️ <?= htmlspecialchars($erreur) ?></div>
+            <div class="alerte-erreur"> <?= htmlspecialchars($erreur) ?></div>
         <?php endif; ?>
 
-        <!-- Explication -->
-        <div class="form-card mb-4" style="border-left:4px solid #1A3A5C">
+        <!-- <div class="form-card mb-4" style="border-left:4px solid #1A3A5C">
             <h6 class="fw-bold text-navy mb-2"><i class="bi bi-info-circle me-2"></i>Comment fonctionne l'automatisation ?</h6>
             <p class="text-muted mb-2" style="font-size:14px">
                 Chaque règle active est évaluée lors de l'exécution (manuelle ou via cron job).
@@ -173,9 +154,8 @@ require_once '../includes/sidebar.php';
                 <code>statut != 'termine' AND date_echeance &lt; CURDATE()</code>
                 - cible toutes les tâches en retard non terminées.
             </p>
-        </div>
+        </div> -->
 
-        <!-- Tableau des règles -->
         <div class="table-card">
             <div class="table-header">
                 <h5><i class="bi bi-list-check me-2"></i><?= count($regles) ?> règle(s)</h5>
@@ -185,7 +165,7 @@ require_once '../includes/sidebar.php';
                     <thead>
                         <tr>
                             <th>Nom de la règle</th>
-                            <th>Condition SQL</th>
+                            <!-- <th>Condition SQL</th> -->
                             <th>Action</th>
                             <th>État</th>
                             <th>Créée le</th>
@@ -196,12 +176,11 @@ require_once '../includes/sidebar.php';
                         <?php foreach ($regles as $r): ?>
                         <tr class="<?= !$r['actif'] ? 'text-muted' : '' ?>">
                             <td class="fw-semibold"><?= htmlspecialchars($r['nom_regle']) ?></td>
-                            <td>
+                            <!-- <td>
                                 <code style="font-size:12px; background:#f5f5f5; padding:3px 6px; border-radius:4px">
-                                    <!-- ✅ CORRECTION : condition_auto au lieu de condition_sql -->
                                     <?= htmlspecialchars($r['condition_auto']) ?>
                                 </code>
-                            </td>
+                            </td> -->
                             <td>
                                 <span class="badge bg-dark" style="font-size:11px;white-space:normal;text-align:left;line-height:1.4">
                                     <?= htmlspecialchars($libelles_action[$r['action_auto']] ?? $r['action_auto']) ?>
@@ -217,10 +196,8 @@ require_once '../includes/sidebar.php';
                             <td class="text-muted"><?= date('d/m/Y', strtotime($r['date_creation'])) ?></td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <!-- Toggle actif/inactif -->
                                     <form method="POST" style="display:inline">
                                         <input type="hidden" name="action" value="toggle">
-                                        <!-- ✅ CORRECTION : id_auto au lieu de id -->
                                         <input type="hidden" name="id" value="<?= $r['id_auto'] ?>">
                                         <input type="hidden" name="actif" value="<?= $r['actif'] ?>">
                                         <button type="submit" class="btn btn-sm <?= $r['actif'] ? 'btn-outline-warning' : 'btn-outline-success' ?>"
@@ -228,7 +205,6 @@ require_once '../includes/sidebar.php';
                                             <i class="bi bi-<?= $r['actif'] ? 'pause' : 'play' ?>-fill"></i>
                                         </button>
                                     </form>
-                                    <!-- Modifier -->
                                     <button class="btn btn-sm btn-outline-secondary" title="Modifier"
                                         data-bs-toggle="modal" data-bs-target="#modalModifier"
                                         data-id="<?= $r['id_auto'] ?>"
@@ -237,11 +213,9 @@ require_once '../includes/sidebar.php';
                                         data-action="<?= htmlspecialchars($r['action_auto']) ?>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <!-- Supprimer -->
                                     <form method="POST" style="display:inline"
                                           onsubmit="return confirm('Supprimer cette règle définitivement ?')">
                                         <input type="hidden" name="action" value="supprimer">
-                                        <!-- ✅ CORRECTION : id_auto au lieu de id -->
                                         <input type="hidden" name="id" value="<?= $r['id_auto'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
                                             <i class="bi bi-trash"></i>
@@ -261,7 +235,6 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<!-- Modal Créer -->
 <div class="modal fade" id="modalCreer" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -280,7 +253,6 @@ require_once '../includes/sidebar.php';
                         <label class="form-label">Condition SQL <span class="text-danger">*</span></label>
                         <input type="text" name="condition_sql" class="form-control font-monospace"
                                placeholder="statut != 'termine' AND date_echeance < CURDATE()" required>
-                        <!-- ✅ CORRECTION : mention de la bonne table "taches" -->
                         <div class="form-text">Condition appliquée sur la table <code>taches</code>.</div>
                     </div>
                     <div class="mb-3">
@@ -299,7 +271,6 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<!-- Modal Modifier -->
 <div class="modal fade" id="modalModifier" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

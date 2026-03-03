@@ -1,8 +1,4 @@
 <?php
-// includes/header.php
-// À inclure en haut de chaque page admin
-// Nécessite que session_start() et les require_once soient déjà faits
-
 $page_courante = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
@@ -27,7 +23,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         margin: 0;
     }
 
-    /* ── SIDEBAR ─────────────────────────────────── */
     .sidebar {
         position: fixed;
         top: 0; left: 0;
@@ -118,7 +113,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     }
     .sidebar-footer a:hover { color: var(--red); }
 
-    /* ── CONTENU PRINCIPAL ───────────────────────── */
     .main-content {
         margin-left: var(--sidebar-w);
         min-height: 100vh;
@@ -126,7 +120,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         flex-direction: column;
     }
 
-    /* ── TOPBAR ──────────────────────────────────── */
     .topbar {
         background: #fff;
         border-bottom: 1px solid #e0e0e0;
@@ -172,13 +165,11 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         font-size: 14px;
     }
 
-    /* ── PAGE CONTENT ────────────────────────────── */
     .page-content {
         padding: 28px;
         flex: 1;
     }
 
-    /* ── CARTES STAT ─────────────────────────────── */
     .stat-card {
         background: #fff;
         border-radius: 12px;
@@ -203,7 +194,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     .stat-card .valeur { font-size: 28px; font-weight: 700; color: var(--navy); line-height: 1; }
     .stat-card .label  { font-size: 13px; color: #888; margin-top: 3px; }
 
-    /* ── TABLEAUX ────────────────────────────────── */
     .table-card {
         background: #fff;
         border-radius: 12px;
@@ -242,7 +232,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     }
     .table-card table tr:last-child td { border: none; }
 
-    /* ── BADGES STATUT ───────────────────────────── */
     .badge-statut {
         padding: 4px 10px;
         border-radius: 20px;
@@ -254,16 +243,13 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     .badge-termine     { background: #d1e7dd; color: #0f5132; }
     .badge-retard      { background: #fde8e8; color: #c0392b; }
 
-    /* ── BADGES PRIORITÉ ─────────────────────────── */
     .badge-basse   { background: #e9ecef; color: #495057; }
     .badge-normale { background: #cfe2ff; color: #0a4a9f; }
     .badge-haute   { background: #fde8e8; color: #c0392b; }
 
-    /* ── BADGES RÔLE ─────────────────────────────── */
     .badge-admin       { background: var(--red); color: #fff; }
     .badge-responsable { background: var(--navy); color: #fff; }
 
-    /* ── BOUTONS ─────────────────────────────────── */
     .btn-navy {
         background: var(--navy);
         color: #fff;
@@ -278,7 +264,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     }
     .btn-red:hover { background: #c0303a; color: #fff; }
 
-    /* ── FORMULAIRES ─────────────────────────────── */
     .form-card {
         background: #fff;
         border-radius: 12px;
@@ -291,7 +276,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         box-shadow: 0 0 0 3px rgba(26,58,92,0.1);
     }
 
-    /* ── ALERTES ─────────────────────────────────── */
     .alerte-succes {
         background: #d4edda; border: 1px solid #c3e6cb; color: #155724;
         padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;
@@ -301,7 +285,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;
     }
 
-    /* ── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 768px) {
         .sidebar { width: 100%; height: auto; position: relative; }
         .main-content { margin-left: 0; }

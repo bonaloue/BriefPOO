@@ -21,7 +21,6 @@ $mes_taches = $tache->getParResponsable($id_user);
 $nb_notifs  = $notification->compterNonLues($id_user);
 $notifs     = $notification->getNonLues($id_user);
 
-// Statistiques personnelles (calculées en PHP, pas de SQL à corriger ici)
 $stats = [
     'total'      => count($mes_taches),
     'en_attente' => count(array_filter($mes_taches, fn($t) => $t['statut'] === 'en_attente')),
@@ -48,7 +47,6 @@ require_once '../includes/sidebar_resp.php';
         <h1 class="titre-page"><i class="bi bi-speedometer2 me-2"></i>Mon tableau de bord</h1>
         <div class="topbar-droite">
 
-            <!-- Cloche notifications -->
             <?php if ($nb_notifs > 0): ?>
             <a href="notifications.php" class="notif-badge text-decoration-none">
                 <i class="bi bi-bell-fill fs-5 text-warning"></i>
@@ -56,7 +54,6 @@ require_once '../includes/sidebar_resp.php';
             </a>
             <?php endif; ?>
 
-            <!-- ✅ Dropdown profil responsable dans la topbar -->
             <div class="dropdown">
                 <div class="d-flex align-items-center gap-2 profil-topbar-btn"
                      data-bs-toggle="dropdown" aria-expanded="false">
@@ -73,7 +70,6 @@ require_once '../includes/sidebar_resp.php';
                 </div>
 
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 profil-dropdown-menu">
-                    <!-- En-tête -->
                     <li>
                         <div class="profil-dd-header">
                             <div class="profil-dd-avatar">
@@ -152,7 +148,6 @@ require_once '../includes/sidebar_resp.php';
             - <?= date('l d F Y') ?>
         </p>
 
-        <!-- Cartes statistiques personnelles -->
         <div class="row g-3 mb-4">
 
             <div class="col-md-6 col-xl-3">
@@ -205,7 +200,6 @@ require_once '../includes/sidebar_resp.php';
 
         </div>
 
-        <!-- Alerte retard -->
         <?php if ($stats['en_retard'] > 0): ?>
         <div class="alert alert-danger d-flex align-items-center gap-3 mb-4" role="alert">
             <i class="bi bi-exclamation-triangle-fill fs-4"></i>
@@ -219,7 +213,6 @@ require_once '../includes/sidebar_resp.php';
 
         <div class="row g-4">
 
-            <!-- Tâches urgentes -->
             <div class="col-xl-7">
                 <div class="table-card">
                     <div class="table-header">
@@ -260,7 +253,7 @@ require_once '../includes/sidebar_resp.php';
                                     </td>
                                     <td>
                                         <span class="<?= $retard ? 'text-danger fw-bold' : 'text-muted' ?>">
-                                            <?= $retard ? '⚠️ ' : '' ?>
+                                            <?= $retard ? ' ' : '' ?>
                                             <?= date('d/m/Y', strtotime($t['date_echeance'])) ?>
                                         </span>
                                     </td>
@@ -280,7 +273,6 @@ require_once '../includes/sidebar_resp.php';
                 </div>
             </div>
 
-            <!-- Notifications non lues -->
             <div class="col-xl-5">
                 <div class="table-card h-100">
                     <div class="table-header">

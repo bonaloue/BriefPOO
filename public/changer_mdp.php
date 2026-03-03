@@ -4,17 +4,13 @@ session_start();
 require_once '../config/database.php';
 require_once '../classes/Utilisateur.php';
 
-// Doit être connecté
 Utilisateur::exigerConnexion();
 
-// ✅ CORRECTION 1 : vérification sécurisée (évite l'erreur si clé absente)
-// ✅ CORRECTION 2 : un admin ne doit jamais atterrir ici
 if (Utilisateur::estAdmin()) {
     header('Location: ../admin/dashboard.php');
     exit;
 }
 
-// ✅ CORRECTION 3 : isset() pour éviter le crash si la clé n'existe pas
 if (empty($_SESSION['doit_changer_mdp'])) {
     header('Location: ../responsable/dashboard.php');
     exit;
@@ -36,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($resultat['succes']) {
         $succes = $resultat['message'];
-        // ✅ CORRECTION 4 : redirection vers le bon dashboard selon le rôle
         header('refresh:2;url=../responsable/dashboard.php');
     } else {
         $erreur = $resultat['message'];
@@ -71,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         max-width: 460px;
     }
 
-    /* Bandeau d'alerte en haut */
     .alerte-bandeau {
         background: #fff3cd;
         border: 1px solid #ffc107;
@@ -181,14 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>🔐 Changement de mot de passe</h2>
         <p class="sous-titre">Bienvenue, <?= htmlspecialchars($_SESSION['user_prenom'] . ' ' . $_SESSION['user_nom']) ?></p>
 
-        <!-- Bandeau d'avertissement -->
         <div class="alerte-bandeau">
-            <strong>⚠️ Action requise avant de continuer</strong>
+            <strong> Action requise avant de continuer</strong>
             Votre compte vient d'être créé par l'administrateur.
             Pour des raisons de sécurité, vous devez changer votre mot de passe par défaut avant d'accéder au système.
         </div>
 
-        <!-- Rappel du mot de passe par défaut -->
         <div class="info-mdp-defaut">
             Votre mot de passe actuel (par défaut) est : <code>passer123</code>
         </div>
@@ -199,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php if ($succes): ?>
             <div class="succes">
-                ✅ <?= htmlspecialchars($succes) ?><br>
+                 <?= htmlspecialchars($succes) ?><br>
                 <small>Redirection vers le tableau de bord dans 2 secondes...</small>
             </div>
         <?php endif; ?>

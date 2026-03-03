@@ -1,5 +1,4 @@
 <?php
-// includes/sidebar.php - Barre latérale admin
 ?>
 <div class="sidebar">
 
@@ -10,13 +9,11 @@
     </div>
 
     <nav>
-        <!-- GÉNÉRAL -->
         <div class="sidebar-section">Général</div>
         <a href="dashboard.php" class="<?= $page_courante === 'dashboard.php' ? 'actif' : '' ?>">
             <i class="bi bi-speedometer2"></i> Tableau de bord
         </a>
 
-        <!-- GESTION -->
         <div class="sidebar-section">Gestion</div>
         <a href="utilisateurs.php" class="<?= $page_courante === 'utilisateurs.php' ? 'actif' : '' ?>">
             <i class="bi bi-people-fill"></i> Utilisateurs
@@ -28,7 +25,6 @@
             <i class="bi bi-gear-wide-connected"></i> Automatisation
         </a>
 
-        <!-- RAPPORTS -->
         <div class="sidebar-section">Rapports</div>
         <a href="historique.php" class="<?= $page_courante === 'historique.php' ? 'actif' : '' ?>">
             <i class="bi bi-clock-history"></i> Historique
@@ -37,7 +33,6 @@
             <i class="bi bi-bell-fill"></i> Notifications
         </a>
 
-        <!-- ✅ AJOUT : INFORMATIONS -->
         <div class="sidebar-section">Informations</div>
         <a href="apropos.php" class="<?= $page_courante === 'apropos.php' ? 'actif' : '' ?>">
             <i class="bi bi-info-circle"></i> À propos
@@ -47,10 +42,8 @@
         </a>
     </nav>
 
-    <!-- ✅ AJOUT : Section profil admin cliquable en bas de sidebar -->
     <div class="sidebar-profil">
 
-        <!-- Bouton déclencheur -->
         <div class="profil-trigger" id="profilTrigger" onclick="toggleProfil()">
             <div class="profil-avatar">
                 <?= strtoupper(
@@ -65,7 +58,6 @@
             <i class="bi bi-chevron-up" id="profilChevron"></i>
         </div>
 
-        <!-- Menu déroulant vers le haut -->
         <div class="profil-dropdown" id="profilDropdown">
             <a href="profil_admin.php"
                class="<?= $page_courante === 'profil_admin.php' ? 'actif' : '' ?>">
@@ -85,9 +77,6 @@
 </div>
 
 <style>
-    /* ══════════════════════════════════════
-       SECTION PROFIL ADMIN - BAS DE SIDEBAR
-    ══════════════════════════════════════ */
 
     .sidebar-profil {
         margin-top: auto;
@@ -95,7 +84,6 @@
         border-top: 1px solid rgba(255,255,255,0.08);
     }
 
-    /* Bouton déclencheur */
     .profil-trigger {
         display: flex;
         align-items: center;
@@ -109,7 +97,6 @@
         background: rgba(255,255,255,0.06);
     }
 
-    /* Avatar */
     .profil-avatar {
         width: 36px;
         height: 36px;
@@ -125,7 +112,6 @@
         flex-shrink: 0;
     }
 
-    /* Texte nom + email */
     .profil-texte {
         flex: 1;
         overflow: hidden;
@@ -147,7 +133,6 @@
         text-overflow: ellipsis;
     }
 
-    /* Chevron */
     .profil-trigger .bi-chevron-up {
         color: rgba(255,255,255,0.35);
         font-size: 12px;
@@ -158,7 +143,6 @@
         transform: rotate(180deg);
     }
 
-    /* Menu déroulant (vers le haut) */
     .profil-dropdown {
         display: none;
         background: rgba(0,0,0,0.2);
@@ -212,7 +196,6 @@ function toggleProfil() {
     trigger.classList.toggle('ouvert');
 }
 
-// Ouvrir automatiquement si on est sur la page profil_admin
 <?php if ($page_courante === 'profil_admin.php'): ?>
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('profilDropdown').classList.add('visible');

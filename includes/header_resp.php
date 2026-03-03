@@ -1,5 +1,4 @@
 <?php
-// includes/header_resp.php
 $page_courante = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
@@ -23,7 +22,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         margin: 0;
     }
 
-    /* ── CONTENU — navbar horizontale, pas de sidebar latérale ── */
     .main-content {
         margin-left: 0 !important;
         min-height: calc(100vh - 61px);
@@ -52,7 +50,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
 
     .page-content { padding: 28px; flex: 1; }
 
-    /* Cartes stat */
     .stat-card {
         background: #fff; border-radius: 12px; padding: 22px 24px;
         display: flex; align-items: center; gap: 18px;
@@ -68,7 +65,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     .stat-card .valeur { font-size: 28px; font-weight: 700; color: var(--navy); line-height: 1; }
     .stat-card .label  { font-size: 13px; color: #888; margin-top: 3px; }
 
-    /* Tableaux */
     .table-card {
         background: #fff; border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;
@@ -88,7 +84,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     .table-card table td { padding: 13px 16px; vertical-align: middle; font-size: 14px; border-color: #f5f5f5; }
     .table-card table tr:last-child td { border: none; }
 
-    /* Badges */
     .badge-statut { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     .badge-en_attente { background: #fff3cd; color: #856404; }
     .badge-en_cours   { background: #cfe2ff; color: #0a4a9f; }
@@ -97,13 +92,11 @@ $page_courante = basename($_SERVER['PHP_SELF']);
     .badge-normale    { background: #cfe2ff; color: #0a4a9f; }
     .badge-haute      { background: #fde8e8; color: #c0392b; }
 
-    /* Boutons */
     .btn-navy  { background: var(--navy);  color: #fff; border: none; }
     .btn-navy:hover  { background: var(--navy-dark); color: #fff; }
     .btn-green { background: var(--green); color: #fff; border: none; }
     .btn-green:hover { background: #157347; color: #fff; }
 
-    /* Formulaires */
     .form-card { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .form-label { font-weight: 600; color: #444; font-size: 14px; }
     .form-control:focus, .form-select:focus {
@@ -111,7 +104,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         box-shadow: 0 0 0 3px rgba(26,58,92,0.1);
     }
 
-    /* Alertes */
     .alerte-succes {
         background: #d4edda; border: 1px solid #c3e6cb; color: #155724;
         padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;
@@ -121,7 +113,6 @@ $page_courante = basename($_SERVER['PHP_SELF']);
         padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;
     }
 </style>
-<!-- ✅ Bootstrap JS requis pour le dropdown de la navbar -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>

@@ -15,7 +15,6 @@ $notification = new Notification($db);
 $succes = '';
 $erreur = '';
 
-// ── Traitement des actions POST ──────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
@@ -71,12 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ── Filtres ──────────────────────────────────────────────────────────────────
 $filtre_statut      = $_GET['statut']      ?? '';
 $filtre_responsable = (int)($_GET['responsable'] ?? 0);
 $filtre_priorite    = $_GET['priorite']    ?? '';
 
-// ✅ CORRECTION : tables "taches" et "utilisateurs" + colonnes "id_tache" / "id_user"
 $sql = "SELECT t.*, u.nom AS responsable_nom, u.prenom AS responsable_prenom
         FROM taches t
         LEFT JOIN utilisateurs u ON t.id_responsable = u.id_user
@@ -101,7 +98,6 @@ $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $taches = $stmt->fetchAll();
 
-// ✅ CORRECTION : table "utilisateurs" + colonne "id_user"
 $users = $db->query("SELECT id_user, nom, prenom, role FROM utilisateurs ORDER BY nom")->fetchAll();
 
 $stats = $tache->getStats();
@@ -124,13 +120,12 @@ require_once '../includes/sidebar.php';
     <div class="page-content">
 
         <?php if ($succes): ?>
-            <div class="alerte-succes">✅ <?= htmlspecialchars($succes) ?></div>
+            <div class="alerte-succes"> <?= htmlspecialchars($succes) ?></div>
         <?php endif; ?>
         <?php if ($erreur): ?>
-            <div class="alerte-erreur">⚠️ <?= htmlspecialchars($erreur) ?></div>
+            <div class="alerte-erreur"> <?= htmlspecialchars($erreur) ?></div>
         <?php endif; ?>
 
-        <!-- Mini stats -->
         <div class="row g-3 mb-4">
             <?php
             $mini_stats = [
@@ -155,7 +150,6 @@ require_once '../includes/sidebar.php';
             <?php endforeach; ?>
         </div>
 
-        <!-- Filtres -->
         <div class="form-card mb-4">
             <form method="GET" class="row g-3 align-items-end">
                 <div class="col-md-3">
@@ -181,7 +175,7 @@ require_once '../includes/sidebar.php';
                     <select name="responsable" class="form-select">
                         <option value="">Tous les responsables</option>
                         <?php foreach ($users as $u): ?>
-                            <!-- ✅ CORRECTION : id_user au lieu de id -->
+                            <!--  CORRECTION : id_user au lieu de id -->
                             <option value="<?= $u['id_user'] ?>" <?= $filtre_responsable === $u['id_user'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($u['prenom'] . ' ' . $u['nom']) ?>
                             </option>
@@ -195,7 +189,6 @@ require_once '../includes/sidebar.php';
             </form>
         </div>
 
-        <!-- Tableau des tâches -->
         <div class="table-card">
             <div class="table-header">
                 <h5><i class="bi bi-list-task me-2"></i><?= count($taches) ?> tâche(s)</h5>
@@ -250,7 +243,7 @@ require_once '../includes/sidebar.php';
                             <td>
                                 <?php if ($t['date_echeance']): ?>
                                     <span class="<?= $en_retard_cell ? 'text-danger fw-bold' : 'text-muted' ?>">
-                                        <?= $en_retard_cell ? '⚠️ ' : '' ?>
+                                        <?= $en_retard_cell ? ' ' : '' ?>
                                         <?= date('d/m/Y', strtotime($t['date_echeance'])) ?>
                                     </span>
                                 <?php else: ?>
@@ -259,7 +252,6 @@ require_once '../includes/sidebar.php';
                             </td>
                             <td class="text-muted"><?= date('d/m/Y', strtotime($t['date_creation'])) ?></td>
                             <td>
-                                <!-- Changer statut rapide -->
                                 <form method="POST" style="display:inline">
                                     <input type="hidden" name="action" value="changer_statut">
                                     <input type="hidden" name="id" value="<?= $t['id_tache'] ?>">
@@ -273,7 +265,6 @@ require_once '../includes/sidebar.php';
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <!-- Bouton Modifier -->
                                     <button class="btn btn-sm btn-outline-secondary" title="Modifier"
                                         data-bs-toggle="modal" data-bs-target="#modalModifier"
                                         data-id="<?= $t['id_tache'] ?>"
@@ -307,7 +298,6 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<!-- Modal Créer -->
 <div class="modal fade" id="modalCreer" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -351,7 +341,6 @@ require_once '../includes/sidebar.php';
                         <select name="id_responsable" class="form-select">
                             <option value="">— Non assigné -</option>
                             <?php foreach ($users as $u): ?>
-                                <!-- ✅ CORRECTION : id_user au lieu de id -->
                                 <option value="<?= $u['id_user'] ?>">
                                     <?= htmlspecialchars($u['prenom'] . ' ' . $u['nom']) ?>
                                     (<?= $u['role'] === 'admin' ? 'Admin' : 'Responsable' ?>)
@@ -369,7 +358,6 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<!-- Modal Modifier -->
 <div class="modal fade" id="modalModifier" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -414,7 +402,7 @@ require_once '../includes/sidebar.php';
                         <select name="id_responsable" id="m_responsable" class="form-select">
                             <option value="">— Non assigné -</option>
                             <?php foreach ($users as $u): ?>
-                                <!-- ✅ CORRECTION : id_user au lieu de id -->
+                                <!--  CORRECTION : id_user au lieu de id -->
                                 <option value="<?= $u['id_user'] ?>">
                                     <?= htmlspecialchars($u['prenom'] . ' ' . $u['nom']) ?>
                                     (<?= $u['role'] === 'admin' ? 'Admin' : 'Responsable' ?>)

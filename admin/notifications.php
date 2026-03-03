@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'tout_lire') {
-        // ✅ CORRECTION : table "notifications" (inchangée, déjà correcte)
+        //  CORRECTION : table "notifications" (inchangée, déjà correcte)
         $db->query("UPDATE notifications SET lu = 1");
         $succes = 'Toutes les notifications marquées comme lues.';
     }
@@ -43,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $notifications = $notification->getToutAdmin();
 
-// ✅ CORRECTION : table "utilisateurs" et colonne "id_user" au lieu de "users" et "id"
 $users       = $db->query("SELECT id_user, nom, prenom FROM utilisateurs ORDER BY nom")->fetchAll();
 $nb_non_lues = $db->query("SELECT COUNT(*) FROM notifications WHERE lu = 0")->fetchColumn();
 
@@ -79,7 +78,7 @@ require_once '../includes/sidebar.php';
     <div class="page-content">
 
         <?php if ($succes): ?>
-            <div class="alerte-succes">✅ <?= htmlspecialchars($succes) ?></div>
+            <div class="alerte-succes"> <?= htmlspecialchars($succes) ?></div>
         <?php endif; ?>
 
         <div class="table-card">
@@ -126,7 +125,7 @@ require_once '../includes/sidebar.php';
                                     <?php if (!$n['lu']): ?>
                                     <form method="POST" style="display:inline">
                                         <input type="hidden" name="action" value="marquer_lue">
-                                        <!-- ✅ CORRECTION : id_notif au lieu de id -->
+                                        <!--  CORRECTION : id_notif au lieu de id -->
                                         <input type="hidden" name="id" value="<?= $n['id_notif'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-success" title="Marquer comme lue">
                                             <i class="bi bi-check2"></i>
@@ -136,7 +135,7 @@ require_once '../includes/sidebar.php';
                                     <form method="POST" style="display:inline"
                                           onsubmit="return confirm('Supprimer cette notification ?')">
                                         <input type="hidden" name="action" value="supprimer">
-                                        <!-- ✅ CORRECTION : id_notif au lieu de id -->
+                                        <!--  CORRECTION : id_notif au lieu de id -->
                                         <input type="hidden" name="id" value="<?= $n['id_notif'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
                                             <i class="bi bi-trash"></i>
@@ -156,7 +155,6 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<!-- Modal Envoyer notification manuelle -->
 <div class="modal fade" id="modalEnvoyer" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -172,7 +170,7 @@ require_once '../includes/sidebar.php';
                         <select name="id_destinataire" class="form-select" required>
                             <option value="">Sélectionner un utilisateur</option>
                             <?php foreach ($users as $u): ?>
-                                <!-- ✅ CORRECTION : id_user au lieu de id -->
+                                <!--  CORRECTION : id_user au lieu de id -->
                                 <option value="<?= $u['id_user'] ?>">
                                     <?= htmlspecialchars($u['prenom'] . ' ' . $u['nom']) ?>
                                 </option>
